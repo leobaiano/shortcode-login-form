@@ -8,10 +8,10 @@
  * Version: 1.0.0
  * License: GPLv2 or later
  * Text Domain: lb-slf
-	 * Domain Path: /languages/
+ * Domain Path: /languages/
  */
-
 function lb_shortcode_login_form( $atts ) {
+	$current_user = wp_get_current_user();
 	$defaults = array(
 		'message_logged'	=> __( 'Logged in!', 'lb-slf' ),
 		'label_username'	=> __( 'Username', 'lb-slf' ),
@@ -20,11 +20,12 @@ function lb_shortcode_login_form( $atts ) {
 		'label_log_in'		=> __( 'Log In', 'lb-slf' ),
 	);
 	$atts = shortcode_atts( $defaults, $atts, 'lb-login-form' );
-	$atts['echo'] = false;
+	$atts['echo'] = true;
 
-	if ( is_user_logged_in() )
-		return '<p>' . $atts['message_logged'] . '</p>';
-
-	return wp_login_form( $atts );
+	if ( is_user_logged_in() ) {
+		return '<p class="lb-user">' . get_avatar( $current_user->ID, 26 ) . ' <span>' . $current_user->display_name . '</span> <a title="' . esc_html__( 'Logout', 'lb-slf' ) . '" href=">' . wp_logout_url( get_permalink() ) . '">'. esc_html__( 'Logout', 'lb-slf' ) . '</a></p>';
+	} else {
+		return wp_login_form( $atts );
+	}
 }
 add_shortcode( 'lb-login-form', 'lb_shortcode_login_form' );
